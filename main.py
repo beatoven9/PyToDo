@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter.messagebox import askyesno
 from tkinter import font
 import json
+from tkinter import filedialog
+
 
 class Activity_Input(tk.Frame):
     def __init__(self, parent, label, default=""):
@@ -102,14 +104,16 @@ class Activities_Container(tk.Frame):
         self.update_activity_list()
 
     def export_json_dict(self):
+        self.filename = filedialog.asksaveasfile(initialdir=".", title="Save as")
         dictionary = {}
         for activity in self.activity_list:
             dictionary[activity.number.cget('text')] = [activity.label.cget('text'), activity.crossed_off]
-        with open("test.json", "w") as outfile:
+        with open(self.filename.name, "w") as outfile:
             json.dump(dictionary, outfile)
 
     def import_json_dict(self):
-        json_dict = open('test.json')
+        self.filename = filedialog.askopenfile(initialdir=".", title="Save as")
+        json_dict = open(self.filename.name)
         loaded_dict = json.load(json_dict)
         self.load_dict(loaded_dict)
 
@@ -118,6 +122,29 @@ class Activities_Container(tk.Frame):
         for i in range(len(loaded_dict.keys())):
             self.add_activity(loaded_dict[str(i+1)][0], loaded_dict[str(i+1)][1])
 
+class Utility_Buttons(tk.Frame):
+    def __init__(self, parent):
+        tk.Frame.__init__(self, parent)
+
+        self.parent = parent
+
+        self.save_button = tk.Button(self, text="Save", command=self.save_list)
+        self.load_button = tk.Button(self, text="load", command=self.load_list)
+        self.clear_button = tk.Button(self, text="Clear", command=self.clear_listings)
+
+        self.save_button.grid(row=0, column=0)
+        self.load_button.grid(row=0, column=1)
+        self.clear_button.grid(row=0, column=2)
+
+    
+    def save_list(self):
+        self.parent.activities_container.export_json_dict()
+
+    def load_list(self):
+        self.parent.activities_container.import_json_dict()
+
+    def clear_listings(self):
+        self.parent.activities_container.clear_listings()
 
 class UI_Frame(tk.Frame):
     def __init__(self, parent):
@@ -125,16 +152,18 @@ class UI_Frame(tk.Frame):
      
         self.label = tk.Label(self, text="To-do list")
         self.activities_container = Activities_Container(self)
-        self.save_button = tk.Button(text="Save", command=self.save_list)
-        self.load_button = tk.Button(text="load", command=self.load_list)
-        self.clear_button = tk.Button(text="Clear", command=self.clear_listings)
+        self.utility_buttons = Utility_Buttons(self)
+       # self.save_button = tk.Button(text="Save", command=self.save_list)
+       # self.load_button = tk.Button(text="load", command=self.load_list)
+       # self.clear_button = tk.Button(text="Clear", command=self.clear_listings)
 
 
         self.label.pack(side="top")
         self.activities_container.pack(side="top", fill=tk.X)
-        self.save_button.pack(side="bottom")
-        self.load_button.pack(side="bottom")
-        self.clear_button.pack(side="bottom")
+        self.utility_buttons.pack(side="bottom", fill=tk.Y)
+       # self.save_button.pack(side="bottom")
+       # self.load_button.pack(side="bottom")
+       # self.clear_button.pack(side="bottom")
 
 
     def save_list(self):
@@ -154,7 +183,7 @@ class To_Do():
         self.root.geometry("600x500")
         self.new_activity = tk.StringVar()
         self.ui_frame = UI_Frame(self.root)
-        self.ui_frame.pack(side="top", fill=tk.X)
+        self.ui_frame.pack(side="top", expand=True, fill=tk.BOTH)
         self.root.mainloop()
 
 if __name__=="__main__":
