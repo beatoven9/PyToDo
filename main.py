@@ -67,6 +67,11 @@ class Activity_Listing(tk.Frame):
     def check_box_checked(self):
         print(self.checked.get())
 
+class Activities_Frame(tk.Frame):
+    def __init__(self, parent):
+        tk.Frame.__init__(self, parent)
+
+
 class UI_Frame(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
