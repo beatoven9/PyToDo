@@ -15,9 +15,9 @@ class Activity_Input(tk.Frame):
         self.entry.insert(0, default)
         self.enter_button = tk.Button(self, text="Enter", command=self.entered)
 
-        self.label.grid(row=0, column=0)
-        self.entry.grid(row=0, column=1)
-        self.enter_button.grid(row=0, column=2)
+        self.label.pack(side='left')
+        self.entry.pack(side='left', expand=True, fill=tk.X)
+        self.enter_button.pack(side='left')
 
     def entered(self):
         self.parent.add_activity(self.new_activity)
@@ -26,26 +26,23 @@ class Activity_Listing(tk.Frame):
     def __init__(self, parent, new_activity=''):
         tk.Frame.__init__(self, parent)
 
+        self.parent = parent
+
         self.checked = tk.BooleanVar()
         self.crossed_off = False
         self.default_font = font.Font(family='Courier', size=10, weight=font.NORMAL, overstrike=0)
         self.striked_font = font.Font(family='Courier', size=10, weight=font.NORMAL, overstrike=1)
 
 
+        self.number = tk.Label(self, text='1')
         self.check_box = tk.Checkbutton(self, variable=self.checked, onvalue=1, offvalue=0, command=self.check_box_checked)
         self.label = tk.Label(self, text=new_activity, font=self.default_font)
         self.cross_button = tk.Button(self, text="Cross off", command=self.cross_off)
         self.delete_button = tk.Button(self, text="delete", command=self.delete_self)
 
-
-
-#        self.check_box.grid(row=0, column=0)
-#        self.label.grid(row=0, column=1, sticky='nsew')
-#        self.delete_button.grid(row=0, column=2)
-#        self.cross_button.grid(row=0, column=3)
-        
         self.check_box.pack(side="left")
-        self.label.pack(side="left", expand=True)
+        self.number.pack(side='left')
+        self.label.pack(side="left", anchor='w', expand=True)
         self.delete_button.pack(side="right")
         self.cross_button.pack(side="right")
 
@@ -61,7 +58,10 @@ class Activity_Listing(tk.Frame):
     def delete_self(self):
         answer = askyesno(title="Deletion Inquiry", message="Delete this activity?")
         if answer:
-            self.destroy()
+            print(self.parent)
+            self.parent.destroy_listing(int(self.number.cget('text')))
+            self.parent.update_activity_list()
+            
         else:
             return
 
@@ -75,21 +75,30 @@ class Activities_Frame(tk.Frame):
         self.activity_input = Activity_Input(self, "input", default="Input activity")
 
         self.activity_list = []
-        self.activity_input.pack(side="top")
+        self.activity_input.pack(side="top", fill=tk.X)
 
     def add_activity(self, new_activity):
         print(new_activity.get())
         activity = Activity_Listing(self, new_activity=new_activity.get())
         self.activity_list.append(activity)
+        activity.number.config(text=str(len(self.activity_list)))
         activity.pack(side="top", fill=tk.X)
         
 
     def update_activity_list(self):
-        for activity in self.activity_list:
-            print('packing')
-            activity.pack(side="top")
-            print(activity.label)
+        for i in range(len(self.activity_list)):
+            if self.activity_list[i]:
+                pass
+                #print('Success ', self.activity_list[i])
+                self.activity_list[i].number.config(text=str(i+1))
+            else:
+                print("This listing doesnt exist")
 
+    def destroy_listing(self, listing_number):
+        self.activity_list[listing_number - 1].destroy()
+        self.activity_list.pop(listing_number - 1)
+        
+        self.update_activity_list()
 
 class UI_Frame(tk.Frame):
     def __init__(self, parent):
@@ -116,8 +125,6 @@ class To_Do():
 
         self.root.mainloop()
         
-    def add_activity(self, activity):
-        print(activity.get())
 
 
 if __name__=="__main__":
