@@ -64,8 +64,7 @@ class Activity_Listing(tk.Frame):
     def delete_self(self):
         answer = askyesno(title="Deletion Inquiry", message="Delete this activity?")
         if answer:
-            self.parent.destroy_listing(int(self.number.cget('text')))
-            self.parent.update_activity_list()
+            self.parent.destroy_listing(int(self.number.cget('text')) - 1 )
         else:
             return
 
@@ -88,9 +87,7 @@ class Activities_Container(tk.Frame):
 
     def clear_listings(self):
         for _i in range(len(self.activity_list)):
-            self.activity_list[-1].destroy()
-            self.activity_list.pop(-1)
-        self.update_activity_list()
+            self.destroy_listing(-1)
  
     def update_activity_list(self):
         for i in range(len(self.activity_list)):
