@@ -39,12 +39,13 @@ class Activity_Listing(tk.Frame):
 
 
 
-       # self.check_box.grid(row=0, column=0)
-       # self.label.grid(row=0, column=1)
-       # self.button.grid(row=0, column=2)
+#        self.check_box.grid(row=0, column=0)
+#        self.label.grid(row=0, column=1, sticky='nsew')
+#        self.delete_button.grid(row=0, column=2)
+#        self.cross_button.grid(row=0, column=3)
         
         self.check_box.pack(side="left")
-        self.label.pack(side="left")
+        self.label.pack(side="left", expand=True)
         self.delete_button.pack(side="right")
         self.cross_button.pack(side="right")
 
@@ -71,24 +72,16 @@ class Activities_Frame(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
 
-
-class UI_Frame(tk.Frame):
-    def __init__(self, parent):
-        tk.Frame.__init__(self, parent)
-     
-        self.label = tk.Label(self, text="To-do list")
         self.activity_input = Activity_Input(self, "input", default="Input activity")
 
         self.activity_list = []
-
-        self.label.pack(side="top")
         self.activity_input.pack(side="top")
 
     def add_activity(self, new_activity):
         print(new_activity.get())
         activity = Activity_Listing(self, new_activity=new_activity.get())
         self.activity_list.append(activity)
-        activity.pack(side="top")
+        activity.pack(side="top", fill=tk.X)
         
 
     def update_activity_list(self):
@@ -96,6 +89,18 @@ class UI_Frame(tk.Frame):
             print('packing')
             activity.pack(side="top")
             print(activity.label)
+
+
+class UI_Frame(tk.Frame):
+    def __init__(self, parent):
+        tk.Frame.__init__(self, parent)
+     
+        self.label = tk.Label(self, text="To-do list")
+        self.listing_frame = Activities_Frame(self)
+
+        self.label.pack(side="top")
+        self.listing_frame.pack(side="top", fill=tk.X)
+
 
 class To_Do():
     def __init__(self):
@@ -106,7 +111,7 @@ class To_Do():
 
         self.ui_frame = UI_Frame(self.root)
 
-        self.ui_frame.pack(side="top")
+        self.ui_frame.pack(side="top", fill=tk.X)
 
 
         self.root.mainloop()
