@@ -5,6 +5,7 @@ import json
 from tkinter import filedialog
 
 
+
 class Activity_Input(tk.Frame):
     def __init__(self, parent, label, default=""):
 
@@ -18,7 +19,7 @@ class Activity_Input(tk.Frame):
         self.enter_button = tk.Button(self, text="Enter", command=self.entered)
 
         self.label.pack(side='left')
-        self.entry.pack(side='left', expand=True, fill=tk.X)
+        self.entry.pack(side='left', expand=True, fill=tk.X, padx=10)
         self.enter_button.pack(side='left')
 
     def entered(self):
@@ -33,14 +34,12 @@ class Activity_Listing(tk.Frame):
 
         self.checked = tk.BooleanVar()
         self.crossed_off = False
-        self.default_font = font.Font(family='Courier', size=10, weight=font.NORMAL, overstrike=0)
-        self.striked_font = font.Font(family='Courier', size=10, weight=font.NORMAL, overstrike=1)
 
         self.number = tk.Label(self, text='1')
         self.check_box = tk.Checkbutton(self, variable=self.checked, onvalue=1, offvalue=0, command=self.check_box_checked)
-        self.label = tk.Label(self, text=new_activity, font=self.default_font)
+        self.label = tk.Label(self, text=new_activity)
         self.cross_button = tk.Button(self, text="Cross off", command=self.toggle_crossed_off)
-        self.delete_button = tk.Button(self, text="delete", command=self.delete_self)
+        self.delete_button = tk.Button(self, text="Delete", command=self.delete_self)
 
         self.check_box.pack(side="left")
         self.number.pack(side='left')
@@ -56,12 +55,11 @@ class Activity_Listing(tk.Frame):
 
     def set_crossed_off(self, crossed):
         if crossed:    
-            self.label.configure(font=self.striked_font)
+            self.label.configure(font=font.Font(overstrike=1))
             self.crossed_off = True
         else:
-            self.label.configure(font=self.default_font)
+            self.label.configure(font=font.Font(overstrike=0))
             self.crossed_off = False
-
 
     def delete_self(self):
         answer = askyesno(title="Deletion Inquiry", message="Delete this activity?")
@@ -76,7 +74,7 @@ class Activity_Listing(tk.Frame):
 class Activities_Container(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent) 
-        self.activity_input = Activity_Input(self, "input", default="Input activity")
+        self.activity_input = Activity_Input(self, "Input", default="Input activity")
         self.activity_list = []
         self.activity_input.pack(side="top", fill=tk.X)
 
@@ -129,7 +127,7 @@ class Utility_Buttons(tk.Frame):
         self.parent = parent
 
         self.save_button = tk.Button(self, text="Save", command=self.save_list)
-        self.load_button = tk.Button(self, text="load", command=self.load_list)
+        self.load_button = tk.Button(self, text="Load", command=self.load_list)
         self.clear_button = tk.Button(self, text="Clear", command=self.clear_listings)
 
         self.save_button.grid(row=0, column=0)
@@ -153,18 +151,10 @@ class UI_Frame(tk.Frame):
         self.label = tk.Label(self, text="To-do list")
         self.activities_container = Activities_Container(self)
         self.utility_buttons = Utility_Buttons(self)
-       # self.save_button = tk.Button(text="Save", command=self.save_list)
-       # self.load_button = tk.Button(text="load", command=self.load_list)
-       # self.clear_button = tk.Button(text="Clear", command=self.clear_listings)
 
-
-        self.label.pack(side="top")
-        self.activities_container.pack(side="top", fill=tk.X)
-        self.utility_buttons.pack(side="bottom", fill=tk.Y)
-       # self.save_button.pack(side="bottom")
-       # self.load_button.pack(side="bottom")
-       # self.clear_button.pack(side="bottom")
-
+        self.label.pack(side="top", pady=15)
+        self.activities_container.pack(side="top", fill=tk.X, padx=15)
+        self.utility_buttons.pack(side="bottom", fill=tk.Y, pady=15)
 
     def save_list(self):
         self.activities_container.export_json_dict()
@@ -175,12 +165,15 @@ class UI_Frame(tk.Frame):
     def clear_listings(self):
         self.activities_container.clear_listings()
         
-
-
 class To_Do():
     def __init__(self):
         self.root = tk.Tk()
         self.root.geometry("600x500")
+
+        self.default_font = font.nametofont("TkDefaultFont")
+        self.default_font.configure(family='Courier', size=10, weight=font.NORMAL)
+    
+
         self.new_activity = tk.StringVar()
         self.ui_frame = UI_Frame(self.root)
         self.ui_frame.pack(side="top", expand=True, fill=tk.BOTH)
